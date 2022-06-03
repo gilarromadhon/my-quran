@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
   title: {
     color: 'white',
     fontSize: '2em',
-    fontFamily: 'Poppins',
     fontWeight: 600
   },
   span:{
@@ -54,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#2A2E46',
     padding: '0 20px 0 15px',
     borderRadius: '10px',
-    fontFamily: 'Poppins',
     position: 'relative',
   },
   content:{
@@ -79,15 +77,16 @@ const useStyles = makeStyles((theme) => ({
   },
   latin: {
     color: 'white',
-    fontSize: '0.8em',
+    fontSize: '1em',
     marginBottom: '-10px',
     fontWeight: 600,
   },
   arti: {
     color: 'gray',
-    fontSize: '0.7em',
+    fontSize: '0.8em',
   },
   arab: {
+    fontSize: '1.2em',
     marginLeft: 'auto',
     color: '#FFCD00',
   },
@@ -161,17 +160,19 @@ export default function Surat() {
         <div>
           <Box className={classes.root}>
             <Box className={classes.header}>
-              <Tooltip title="Not Available">
+              {/* <Tooltip title="Not Available">
                 <IconButton>
                   <i class="ri-book-mark-line" style={{color: 'white', fontSize: '20px'}} ></i>
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
+              <Box></Box>
               <p className={classes.title}><span className={classes.span}>my</span>Quran</p>
-              <Tooltip title="Not Available">
+              <Box></Box>
+              {/* <Tooltip title="Not Available">
                 <IconButton>
                   <i class="ri-search-line" style={{color: 'white', fontSize: '20px'}} ></i>
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Box>
             <Box className={classes.body}>
               <Grid container spacing={2}>
@@ -193,7 +194,7 @@ export default function Surat() {
           </Box>
             <Box className={classes.footer}>
               Developer 
-              <i class="ri-gitlab-line" style={{marginLeft: 10}} onClick={() => {window.open("https://gitlab.com/gilarromadhon", "_blank");}}></i>
+              <i class="ri-github-line" style={{marginLeft: 10}} onClick={() => {window.open("https://github.com/gilarromadhon", "_blank");}}></i>
               <i class="ri-instagram-line" style={{marginLeft: 5}} onClick={() => {window.open("https://instagram.com/gilarromadhon", "_blank");}}></i>
               <i class="ri-linkedin-line" style={{marginLeft: 5}} onClick={() => {window.open("https://linkedin.com/in/gilarromadhon", "_blank");}}></i>
             </Box>

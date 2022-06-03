@@ -26,8 +26,32 @@ const useStyles = makeStyles((theme) => ({
     padding: '0px 30px',
     paddingBottom: '20px',  
   },
+  checkBox: {
+    [theme.breakpoints.down('md')]: {
+      width: '85%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '95%',
+    },
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingBottom: '20px',
+  },
+  checkLabel: {
+    marginLeft: '5px',
+    color: 'white',
+    fontWeight: 600,
+    fontSize: '0.8em',
+  },
   header: {
-    width: '95%',
+    [theme.breakpoints.down('md')]: {
+      width: '85%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '95%',
+    },
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -36,7 +60,6 @@ const useStyles = makeStyles((theme) => ({
   title: {
     color: 'white',
     fontSize: '1.5em',
-    fontFamily: 'Poppins',
     fontWeight: 600
   },
   card: {
@@ -48,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#2A2E46',
     padding: '0 15px 5px 15px',
     borderRadius: '10px',
-    fontFamily: 'Poppins',
     position: 'relative',
   },
   content:{
@@ -94,12 +116,13 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   arti: {
-    color: 'gray',
-    fontSize: '0.5em',
+    color: 'white',
+    fontSize: '0.7em',
     textAlign: 'right',
     marginTop: '-10px',
   },
   arab: {
+    fontSize: '1.2em',
     marginLeft: 'auto',
     color: '#FFCD00',
     textAlign: 'right',
@@ -112,11 +135,16 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     backgroundColor: '#1E2237',
   },
+  grid: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   next: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     width: '100%',
     color: 'white',
     fontSize: '0.8em',
@@ -124,9 +152,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '20px',
   },
   nextLabel: {
-    fontFamily: 'Poppins',
     fontWeight: 600,
-    fontSize: '0.8em',
+    fontSize: '1em',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nextHide: {
     display: 'none',
@@ -159,6 +190,7 @@ export default function Ayat() {
   const { surat } = useParams()
   const history = useNavigate();
   const scrollToTop = useRef();
+  const [arti, setArti] = useState(false);
 
   function setListAyat (ayat) {
     let a = ayat[ayat.length - 1].ar.replace("ࣖ", "")
@@ -185,6 +217,7 @@ export default function Ayat() {
   useEffect(() => {
     if (data.length !== 0) {
         setIsLoading(false)
+        scrollToTop.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [data]);
 
@@ -199,11 +232,27 @@ export default function Ayat() {
         setAyat(setListAyat(res.ayat))
       })
     history('/ayat/' + id, { state: { id } });
-    scrollToTop.current.scrollIntoView({ behavior: "smooth" });
   }
 
-  function handleBack() {
+  const handleBack = (data) => {
+    console.log(data.surat_sebelumnya.id)
+    let id = data.surat_sebelumnya.id
+    fetch('https://equran.id/api/surat/' + id)
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res)
+        setData(res)
+        setAyat(setListAyat(res.ayat))
+      })
+    history('/ayat/' + id, { state: { id } });
+  }
+
+  function handleHome() {
     history("/surat");
+  }
+
+  function handleArti(){
+    setArti(!arti)
   }
 
   return (
@@ -216,8 +265,12 @@ export default function Ayat() {
         <div>
           <Box className={classes.root}>
             <Box className={classes.header} ref={scrollToTop}>
-              <ArrowBackIcon color="primary" onClick={handleBack}  sx={{ fontSize: 35, cursor: 'pointer' }} />
+              <ArrowBackIcon color="primary" onClick={handleHome}  sx={{ fontSize: 35, cursor: 'pointer' }} />
               <p className={classes.title}>Surah { data.nama_latin }</p>
+            </Box>
+            <Box className={classes.checkBox}>
+              <input type="checkbox" id="checkbox" onClick={handleArti}/> 
+              <span className={classes.checkLabel}>Dengan Arti</span>
             </Box>
             <Box className={classes.body}>
               <Grid container spacing={2}>
@@ -228,21 +281,39 @@ export default function Ayat() {
                     <img src={frame} alt="logo" className={classes.frame}/>
                     <Box className={classes.content}>
                       <p className={classes.arab}>{item.ar}</p> 
-                      <p className={classes.arti}>{item.idn}</p>
+                      {
+                        arti ? 
+                        <p className={classes.arti}>{item.idn}</p> : null
+                      }
                       {/* <p className={classes.latin} dangerouslySetInnerHTML={{ __html: item.tr }}></p> */}
                     </Box>
                   </Box>
                 </Grid>
                 })}
               </Grid>
-              <Box className={surat === "114" ? classes.nextHide : classes.next} onClick={() => (handleNext(data))}>
-                <p className={classes.nextLabel}>Surat Selanjutnya</p>
-                <ArrowForwardIcon color="primary" sx={{ fontSize: 25 }} />
+              <Box className={classes.next}>
+                <Grid item xs={5} className={classes.grid} style={{width: '45%', justifyContent: 'flex-start'}}>
+                  <Box className={surat === "1" ? classes.nextHide : classes.nextLabel} onClick={() => (handleBack(data))}>
+                    <ArrowBackIcon color="primary" sx={{ fontSize: 25 }} />
+                    Surat Sebelumnya
+                </Box>
+                </Grid>
+                <Grid item xs={2} className={classes.grid}>
+                  <Box>
+                    {surat}
+                  </Box>
+                </Grid>
+                <Grid item xs={5} className={classes.grid} style={{width: '45%', justifyContent: 'flex-end'}}>
+                  <Box className={surat === "114" ? classes.nextHide : classes.nextLabel} onClick={() => (handleNext(data))}>
+                    Surat Selanjutnya
+                    <ArrowForwardIcon color="primary" sx={{ fontSize: 25 }} />
+                  </Box>
+                </Grid>
               </Box>
             </Box>
             <Box className={classes.footer}>
               Developer 
-              <i class="ri-gitlab-line" style={{marginLeft: 10}} onClick={() => {window.open("https://gitlab.com/gilarromadhon", "_blank");}}></i>
+              <i class="ri-github-line" style={{marginLeft: 10}} onClick={() => {window.open("https://github.com/gilarromadhon", "_blank");}}></i>
               <i class="ri-instagram-line" style={{marginLeft: 5}} onClick={() => {window.open("https://instagram.com/gilarromadhon", "_blank");}}></i>
               <i class="ri-linkedin-line" style={{marginLeft: 5}} onClick={() => {window.open("https://linkedin.com/in/gilarromadhon", "_blank");}}></i>
             </Box>

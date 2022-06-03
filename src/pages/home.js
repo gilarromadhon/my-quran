@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
   title: {
     color: 'white',
     fontSize: '2em',
-    fontFamily: 'Poppins',
     fontWeight: 600
   },
   span: {
