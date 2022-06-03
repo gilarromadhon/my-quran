@@ -6,7 +6,7 @@ import PulseLoader from "react-spinners/PulseLoader";
 import { useNavigate } from 'react-router-dom';
 import 'remixicon/fonts/remixicon.css'
 import frame from '../assets/frame.png';
-import { Grid, IconButton, Tooltip } from '@mui/material';
+import { Grid } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,6 +54,11 @@ const useStyles = makeStyles((theme) => ({
     padding: '0 20px 0 15px',
     borderRadius: '10px',
     position: 'relative',
+    cursor: 'pointer',
+    '&:hover': {
+      padding: '0 25px 0 15px',
+      boxShadow: 'rgba(0, 0, 0, 0.2) 10px 10px 5px',
+    }
   },
   content:{
     textAlign: 'left',
