@@ -116,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   arti: {
-    color: 'white',
+    color: '#FFCD00',
     fontSize: '0.7em',
     textAlign: 'right',
     marginTop: '-10px',
@@ -124,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
   arab: {
     fontSize: '1.2em',
     marginLeft: 'auto',
-    color: '#FFCD00',
+    color: 'white',
     textAlign: 'right',
   },
   loading: {
@@ -190,7 +190,7 @@ export default function Ayat() {
   const { surat } = useParams()
   const history = useNavigate();
   const scrollToTop = useRef();
-  const [arti, setArti] = useState(false);
+  const [arti, setArti] = useState(true);
 
   function setListAyat (ayat) {
     let a = ayat[ayat.length - 1].ar.replace("ࣖ", "")
@@ -269,7 +269,7 @@ export default function Ayat() {
               <p className={classes.title}>Surah { data.nama_latin }</p>
             </Box>
             <Box className={classes.checkBox}>
-              <input type="checkbox" id="checkbox" onClick={handleArti}/> 
+              <input type="checkbox" defaultChecked={arti} id="checkbox" onClick={handleArti}/> 
               <span className={classes.checkLabel}>Dengan Arti</span>
             </Box>
             <Box className={classes.body}>
