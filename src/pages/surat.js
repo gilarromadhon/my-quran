@@ -6,15 +6,16 @@ import PulseLoader from "react-spinners/PulseLoader";
 import { useNavigate } from 'react-router-dom';
 import 'remixicon/fonts/remixicon.css'
 import frame from '../assets/frame.png';
-import { Grid } from '@mui/material';
+import { Grid, IconButton, TextField, Tooltip } from "@mui/material";
+import Collapse from '@mui/material/Collapse';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     backgroundColor: '#1E2237',
   },
   body: {
@@ -22,12 +23,18 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: '0px 30px',
     height: '100%',
-    paddingBottom: '20px',  
+    width: '100%',
+    marginBottom: '50px',
+
   },
   header: {
-    width: '95%',
+    [theme.breakpoints.down('md')]: {
+      width: '90%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '95%',
+    },
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -35,6 +42,14 @@ const useStyles = makeStyles((theme) => ({
   },
   search: {
     color: 'white',
+    marginBottom: '30px',
+    padding: '0px 30px',
+  },
+  input: {
+    color: 'white',
+    backgroundColor: 'white',
+    width: '100%',
+    borderRadius: '4px',
   },
   title: {
     color: 'white',
@@ -50,9 +65,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#2A2E46',
     padding: '0 20px 0 15px',
-    borderRadius: '10px',
     position: 'relative',
     cursor: 'pointer',
     '&:hover': {
@@ -114,6 +127,18 @@ const useStyles = makeStyles((theme) => ({
     color: 'white',
     fontSize: '0.7em',
   },
+  suratContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  noSurat: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 const override = css`
@@ -126,14 +151,16 @@ export default function Surat() {
   const classes = useStyles();
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState(false);
   const [color] = useState("#ffffff");
   const history = useNavigate();
+  const [searchSurat, setSearchSurat] = useState(null);
 
   const getData = () => {
     fetch('https://equran.id/api/surat')
       .then((res) => res.json())
       .then((res) => {
-        console.log(res[0])
+        // console.log(res[0])
         setData(res)
       })
   }
@@ -150,10 +177,27 @@ export default function Surat() {
     }
   }, [data]);
 
+  const handleSearch = () => {
+    setSearch(!search)
+    if(!search === true) {
+      setSearchSurat(null)
+    }
+  }
+
   const handleClick = (UserId) => {
     console.log(UserId)
     history('/ayat/' + UserId, { state: { UserId } });
   }
+
+  const bySearch = (data, searchSurat) => {
+    if (searchSurat) {
+      return data.nama_latin.toLowerCase().includes(searchSurat.toLowerCase());
+    } else return data;
+  };
+
+  const filteredList = (data, searchSurat) => {
+    return data.filter((datas) => bySearch(datas, searchSurat));
+  };
 
   return (
       <div sx={{backgroundColor: 'red'}}>
@@ -165,35 +209,52 @@ export default function Surat() {
         <div>
           <Box className={classes.root}>
             <Box className={classes.header}>
-              {/* <Tooltip title="Not Available">
-                <IconButton>
-                  <i class="ri-book-mark-line" style={{color: 'white', fontSize: '20px'}} ></i>
-                </IconButton>
-              </Tooltip> */}
+              <Tooltip title='Not Available'>
+                <IconButton>{/* <i className='ri-book-mark-line' style={{ color: 'white', fontSize: '20px' }}></i> */}</IconButton>
+              </Tooltip>
               <Box></Box>
-              <p className={classes.title}><span className={classes.span}>my</span>Quran</p>
+              <p className={classes.title}>
+                <span className={classes.span}>my</span>Quran
+              </p>
               <Box></Box>
-              {/* <Tooltip title="Not Available">
-                <IconButton>
-                  <i class="ri-search-line" style={{color: 'white', fontSize: '20px'}} ></i>
-                </IconButton>
-              </Tooltip> */}
+              <IconButton onClick={handleSearch}>
+                <i className='ri-search-line' style={{ color: 'white', fontSize: '20px' }}></i>
+              </IconButton>
             </Box>
             <Box className={classes.body}>
               <Grid container spacing={2}>
-                {data.map((item, i) => {
-                return <Grid item xs={12} md={6} lg={4} key={`data-${i}`} >
-                  <Box className={classes.card} onClick={() => (handleClick(item.nomor))}>
-                    <p className={classes.nomor}>{item.nomor}</p>
-                    <img src={frame} alt="logo" className={classes.frame}/>
-                    <Box className={classes.content}>
-                      <p className={classes.latin}>{item.nama_latin}</p>
-                      <p className={classes.arti}>{item.arti} <br/> {item.jumlah_ayat} Ayat</p>
-                    </Box>
-                    <p className={classes.arab}>{item.nama}</p> 
-                  </Box>
+                <Grid item xs={12} md={6} lg={12}>
+                    <Collapse in={search} className={classes.search}>
+                      <TextField
+                      id="filled-basic"  variant="filled"
+                        label='Cari Surat'
+                        type='search'
+                        className={classes.input}
+                        nam="searchSurat"
+                        onChange={(e) => setSearchSurat(e.target.value) }
+                      />
+                    </Collapse>
                 </Grid>
-                })}
+              </Grid>
+              <Grid container className={filteredList(data, searchSurat).length !== 0 ? classes.suratContainer : classes.noSurat}>
+                { filteredList(data, searchSurat).length !== 0 ? filteredList(data, searchSurat).map((item, i) => (
+                  <Grid item xs={12} md={6} lg={4} key={`data-${i}`}>
+                    <Box className={classes.card} style={ item.nomor%2 === 0 ? {backgroundColor: '#1E2237'} : {backgroundColor: '#2A2E46'} }  onClick={() => handleClick(item.nomor)}>
+                      <p className={classes.nomor}>{item.nomor}</p>
+                      <img src={frame} alt='logo' className={classes.frame} />
+                      <Box className={classes.content}>
+                        <p className={classes.latin}>{item.nama_latin}</p>
+                        <p className={classes.arti}>
+                          {item.arti} <br /> {item.jumlah_ayat} Ayat
+                        </p>
+                      </Box>
+                      <p className={classes.arab}>{item.nama}</p>
+                    </Box>
+                  </Grid>
+                )) : 
+                (
+                    <p className={classes.latin}>Tidak ada surat {searchSurat}</p>
+                )}
               </Grid>
             </Box>
           </Box>

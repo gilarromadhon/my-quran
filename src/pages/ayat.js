@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { css } from "@emotion/react";
-import PulseLoader from "react-spinners/PulseLoader";
+import BarLoader from "react-spinners/BarLoader";
 import { useNavigate, useParams } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ChevronLeft';
 import ArrowForwardIcon from '@mui/icons-material/ChevronRight';
@@ -23,12 +23,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: '0px 30px',
     paddingBottom: '20px',  
   },
   checkBox: {
     [theme.breakpoints.down('md')]: {
-      width: '85%',
+      width: '90%',
     },
     [theme.breakpoints.up('md')]: {
       width: '95%',
@@ -47,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
   header: {
     [theme.breakpoints.down('md')]: {
-      width: '85%',
+      width: '90%',
     },
     [theme.breakpoints.up('md')]: {
       width: '95%',
@@ -56,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: '30px',
   },
   title: {
     color: 'white',
@@ -68,9 +68,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#2A2E46',
-    padding: '0 15px 5px 15px',
-    borderRadius: '10px',
+    padding: '10px 25px',
     position: 'relative',
   },
   content:{
@@ -82,21 +80,22 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'right',
   },
   frame:{
-    marginRight: '10px',
-    position: 'absolute',
-    left: '11px',
-    width: '35px',
-  },
-  nomor:{
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+  },
+  img:{
+    position: 'absolute',
+    width: '35px',
+
+  },
+  nomor:{
+    position: 'absolute',
     color: 'white',
-    width: '30px',
-    height: '30px',
     fontSize: '0.7em',
-    marginRight: '20px',
   },
   nomorSmall:{
     display: 'flex',
@@ -141,11 +140,16 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   next: {
+    [theme.breakpoints.down('md')]: {
+      width: '90%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '95%',
+    },
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
     color: 'white',
     fontSize: '0.8em',
     cursor: 'pointer',
@@ -183,7 +187,7 @@ const override = css`
 
 export default function Ayat() {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
   const [ayat, setAyat] = useState([]);
   const [color] = useState("#ffffff");
@@ -217,9 +221,11 @@ export default function Ayat() {
   useEffect(() => {
     if (data.length !== 0) {
         setIsLoading(false)
-        scrollToTop.current.scrollIntoView({ behavior: "smooth" });
+        if(isLoading === false) {
+          scrollToTop.current.scrollIntoView({ behavior: 'auto' });
+        }
     }
-  }, [data]);
+  }, [data, isLoading]);
 
   const handleNext = (data) => {
     console.log(data.surat_selanjutnya.id)
@@ -259,7 +265,7 @@ export default function Ayat() {
       <div>
       {isLoading ? (
         <Box className={classes.loading}>
-          <PulseLoader color={color} loading={isLoading} css={override} size={15} />
+          <BarLoader color={color} loading={isLoading} css={override} size={15} />
         </Box>
       ) : (
         <div>
@@ -268,17 +274,19 @@ export default function Ayat() {
               <ArrowBackIcon color="primary" onClick={handleHome}  sx={{ fontSize: 35, cursor: 'pointer' }} />
               <p className={classes.title}>Surah { data.nama_latin }</p>
             </Box>
-            <Box className={classes.checkBox}>
-              <input type="checkbox" defaultChecked={arti} id="checkbox" onClick={handleArti}/> 
-              <span className={classes.checkLabel}>Dengan Arti</span>
-            </Box>
             <Box className={classes.body}>
-              <Grid container spacing={2}>
+              {/* <Box className={classes.checkBox}>
+                <input type="checkbox" defaultChecked={arti} id="checkbox" onClick={handleArti}/> 
+                <span className={classes.checkLabel}>Dengan Arti</span>
+              </Box> */}
+              <Grid container>
                 {ayat.map((item, i) => {
                 return <Grid item xs={12} key={`ayat-${i}`} >
-                  <Box className={classes.card}>
-                    <p className={item.nomor > 99 ? classes.nomorSmall : classes.nomor}>{item.nomor}</p>
-                    <img src={frame} alt="logo" className={classes.frame}/>
+                  <Box className={classes.card} style={ item.nomor%2 === 0 ? {backgroundColor: '#1E2237'} : {backgroundColor: '#2A2E46'} } >
+                    <Box className={classes.frame}>
+                      <p className={classes.nomor}>{item.nomor}</p>
+                      <img src={frame} alt="logo" className={classes.img}/>
+                    </Box>
                     <Box className={classes.content}>
                       <p className={classes.arab}>{item.ar}</p> 
                       {
