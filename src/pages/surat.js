@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#1E2237',
   },
@@ -209,14 +209,9 @@ export default function Surat() {
         <div>
           <Box className={classes.root}>
             <Box className={classes.header}>
-              <Tooltip title='Not Available'>
-                <IconButton>{/* <i className='ri-book-mark-line' style={{ color: 'white', fontSize: '20px' }}></i> */}</IconButton>
-              </Tooltip>
-              <Box></Box>
               <p className={classes.title}>
                 <span className={classes.span}>my</span>Quran
               </p>
-              <Box></Box>
               <IconButton onClick={handleSearch}>
                 <i className='ri-search-line' style={{ color: 'white', fontSize: '20px' }}></i>
               </IconButton>
