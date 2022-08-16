@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@material-ui/core/styles';
-import { css } from "@emotion/react";
-import PulseLoader from "react-spinners/PulseLoader";
 import { useNavigate } from 'react-router-dom';
 import 'remixicon/fonts/remixicon.css'
 import frame from '../assets/frame.png';
-import { Grid, IconButton, TextField, Tooltip } from "@mui/material";
+import { Grid, IconButton, TextField } from "@mui/material";
 import Collapse from '@mui/material/Collapse';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
   },
   search: {
     color: 'white',
-    marginBottom: '30px',
     padding: '0px 30px',
   },
   input: {
@@ -70,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     '&:hover': {
       padding: '0 25px 0 15px',
-      boxShadow: 'rgba(0, 0, 0, 0.2) 10px 10px 5px',
+      boxShadow: 'rgba(0, 0, 0, 0.1) 5px 5px 3px',
     }
   },
   content:{
@@ -102,6 +99,9 @@ const useStyles = makeStyles((theme) => ({
   arti: {
     color: 'gray',
     fontSize: '0.8em',
+    '&:hover': {
+      color: '#FFCD00',
+    }
   },
   arab: {
     fontSize: '1.2em',
@@ -139,43 +139,45 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  quote: {
+    color: '#FFCD00',
+    fontSize: '1em',
+    margin: '30px 0',
+    padding: '0 30px',
+    textAlign: 'center',
+    width: '75%',
+  },
 }));
-
-const override = css`
-  display: block;
-  margin: 0 auto;
-  border-color: red;
-`;
 
 export default function Surat() {
   const classes = useStyles();
-  const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [quote, setQuote] = useState([]);
   const [search, setSearch] = useState(false);
-  const [color] = useState("#ffffff");
   const history = useNavigate();
   const [searchSurat, setSearchSurat] = useState(null);
 
-  const getData = () => {
-    fetch('https://equran.id/api/surat')
-      .then((res) => res.json())
-      .then((res) => {
-        // console.log(res[0])
-        setData(res)
-      })
-  }
-
   useEffect(() => {
-    getData()
+    var surat = JSON.parse(localStorage.getItem('data'));
+    setData(surat);
+
+    var quote = [
+      "",
+      "Bacalah Al-Qur'an mu, agar selamat kehidupan dunia dan akhiratmu.",
+      "Membaca Al-Qur'an adalah wajib bagimu, yuk kita baca sekarang.",
+      "Membaca Al-Qur'an itu banyak manfaatnya, selain sebagai penolong juga bisa mengobati kesedihan.",
+      "Al-Qur'an adalah cahaya. Bacalah Al-Qur'an dan kumpulkan cahaya penerangmu sebanyak-banyaknya.",
+      "Al-Qur'an adalah petunjuk. Kalau gak dibaca kita tidak tau apa yang ditunjukkan didalamnya.",
+      "Jika kamu menjadikan Al-Qur'an sebagai panduan, maka kamu tidak akan pernah kehilangan arah.",
+      "Bacalah Al-Qur'an, karena ia akan memberikan syafaat di hari kiamat kelak kepada para pembacanya.",
+      "Al-Qur'an itu menakjubkan. Meski kamu baca berulang-ulang, kamu tetap menemukan keajaiban yang tidak kamu sadari sebelumnya.",
+      "Hidup tanpa Al-Qur'an bagaikan kapal tanpa nahkoda.",
+      "Sebaik-baik di antara kalian adalah yang mempelajari Al-Qur'an dan mengajarkannya.",
+    ]
+    let randomNumber = Math.floor(Math.random()*(10-1+1)+1)
+    setQuote(quote[randomNumber]);
+    console.log(randomNumber);
   }, [])
-
-  useEffect(() => {
-    if (data.length !== 0) {
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 2000)
-    }
-  }, [data]);
 
   const handleSearch = () => {
     setSearch(!search)
@@ -200,12 +202,7 @@ export default function Surat() {
   };
 
   return (
-      <div sx={{backgroundColor: 'red'}}>
-      {isLoading ? (
-        <Box className={classes.loading}>
-          <PulseLoader color={color} loading={isLoading} css={override} size={15} />
-        </Box>
-      ) : (
+      <div>
         <div>
           <Box className={classes.root}>
             <Box className={classes.header}>
@@ -218,7 +215,7 @@ export default function Surat() {
             </Box>
             <Box className={classes.body}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6} lg={12}>
+                <Grid item xs={12}>
                     <Collapse in={search} className={classes.search}>
                       <TextField
                       id="filled-basic"  variant="filled"
@@ -230,6 +227,12 @@ export default function Surat() {
                       />
                     </Collapse>
                 </Grid>
+              </Grid>
+              <Grid container justifyContent={"center"}>
+                <p className={classes.quote}>{quote}</p>
+                {
+                  searchSurat ? <p className={classes.quote}>Hasil Pencarian</p> : ''
+                }
               </Grid>
               <Grid container className={filteredList(data, searchSurat).length !== 0 ? classes.suratContainer : classes.noSurat}>
                 { filteredList(data, searchSurat).length !== 0 ? filteredList(data, searchSurat).map((item, i) => (
@@ -255,12 +258,11 @@ export default function Surat() {
           </Box>
             <Box className={classes.footer}>
               Developer 
-              <i class="ri-github-line" style={{marginLeft: 10}} onClick={() => {window.open("https://github.com/gilarromadhon", "_blank");}}></i>
-              <i class="ri-instagram-line" style={{marginLeft: 5}} onClick={() => {window.open("https://instagram.com/gilarromadhon", "_blank");}}></i>
-              <i class="ri-linkedin-line" style={{marginLeft: 5}} onClick={() => {window.open("https://linkedin.com/in/gilarromadhon", "_blank");}}></i>
+              <i className="ri-github-line" style={{marginLeft: 10}} onClick={() => {window.open("https://github.com/gilarromadhon", "_blank");}}></i>
+              <i className="ri-instagram-line" style={{marginLeft: 5}} onClick={() => {window.open("https://instagram.com/gilarromadhon", "_blank");}}></i>
+              <i className="ri-linkedin-line" style={{marginLeft: 5}} onClick={() => {window.open("https://linkedin.com/in/gilarromadhon", "_blank");}}></i>
             </Box>
         </div>
-      )}
     </div>
   );
 }
